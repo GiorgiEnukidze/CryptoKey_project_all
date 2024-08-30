@@ -19,8 +19,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copier le projet Django dans le conteneur
 COPY . /app/
 
+# Copier le script d'entrée
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 # Exposer le port 8000 (port par défaut de Django)
 EXPOSE 8000
+
+# Utiliser le script d'entrée par défaut
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 # Lancer le serveur de développement Django
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

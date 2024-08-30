@@ -15,7 +15,10 @@ services:
   web:
     build:
       context: ./cryptokey_project2
-    command: bash -c "sleep 10 && python manage.py runserver 0.0.0.0:8000"
+    environment:
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_PASSWORD: GioTest123
+      DJANGO_SUPERUSER_EMAIL: admin@example.com
     networks:
       - cryptokey_network
     ports:
