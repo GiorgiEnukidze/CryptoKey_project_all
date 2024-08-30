@@ -9,7 +9,7 @@ class HttpService {
   Future<String?> login(String username, String password) async {
     try {
       final response = await http.post(
-        Uri.parse('http://$apiUrl//token/'),
+        Uri.parse('$apiUrl/passwords/token/'),
         body: {
           'username': username,
           'password': password,
@@ -29,10 +29,9 @@ class HttpService {
   }
 
   Future<void> fetchData(String token) async {
-    final String apiUrl = 'http://127.0.0.1:8000/api/passwords/';
 
     final response = await http.get(
-      Uri.parse('http://$apiUrl/token/'),
+      Uri.parse('$apiUrl/token/'),
       headers: {
         'Authorization': 'Bearer $token',
       },

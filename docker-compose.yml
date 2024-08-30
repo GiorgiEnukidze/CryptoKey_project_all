@@ -15,6 +15,7 @@ services:
   web:
     build:
       context: ./cryptokey_project2
+    command: /app/wait_for_db.sh python manage.py runserver 0.0.0.0:8000
     environment:
       DJANGO_SUPERUSER_USERNAME: admin
       DJANGO_SUPERUSER_PASSWORD: GioTest123
@@ -30,11 +31,13 @@ services:
     build:
       context: ./crypto_key
       args:
-        API_URL: "http://localhost:8000/api"
+        API_URL: "https://cryptokey.lebourbier.be/api"
     ports:
       - "80:80"
     networks:
       - cryptokey_network
+    volumes:
+      - ./crypto_key/build/web:/usr/share/nginx/html
     depends_on:
       - web
 

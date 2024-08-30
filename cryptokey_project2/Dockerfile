@@ -10,6 +10,8 @@ RUN apt-get update \
         build-essential \
         libpq-dev \
         gcc \
+        netcat-traditional \
+        curl\
     && rm -rf /var/lib/apt/lists/*
 
 # Copier et installer les dépendances Python
@@ -29,5 +31,8 @@ EXPOSE 8000
 # Utiliser le script d'entrée par défaut
 ENTRYPOINT ["/app/entrypoint.sh"]
 
+COPY wait_for_db.sh /app/wait_for_db.sh
+RUN chmod +x /app/wait_for_db.sh
+
 # Lancer le serveur de développement Django
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["/app/wait_for_db.sh", "python", "manage.py", "runserver", "0.0.0.0:8000"]

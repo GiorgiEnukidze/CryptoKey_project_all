@@ -19,7 +19,8 @@ ALLOWED_HOSTS = [
     "localhost",
     "192.168.129.78",
     '127.0.0.1', 
-    'web',
+    'lebourbier.be',
+    'cryptokey.lebourbier.be',
 ]
 
 # Application definition
@@ -224,12 +225,13 @@ LOGGING = {
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.ionos.fr'
 EMAIL_PORT = 465
-EMAIL_USE_TLS = False  # TLS est désactivé car SSL est utilisé
-EMAIL_USE_SSL = True  # Activer SSL
-EMAIL_HOST_USER = 'admin@lebourbier.be'  # Remplacez par votre adresse e-mail complète
-EMAIL_HOST_PASSWORD = '2@Qrr!89Fn!4Ki'  # Remplacez par votre mot de passe d'application ou mot de passe réel
-DEFAULT_FROM_EMAIL = 'admin@lebourbier.be'  # Remplacez par votre adresse e-mail complète
+EMAIL_USE_TLS = False  
+EMAIL_USE_SSL = True  
+EMAIL_HOST_USER = 'admin@lebourbier.be'  
+EMAIL_HOST_PASSWORD = '2@Qrr!89Fn!4Ki' 
+DEFAULT_FROM_EMAIL = 'admin@lebourbier.be'  
 
+SECURE_SSL_REDIRECT = False
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'localhost'

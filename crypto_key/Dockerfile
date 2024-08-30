@@ -55,7 +55,7 @@ FROM nginx:alpine
 COPY --from=build /app/build/web /usr/share/nginx/html
 
 # Exposer le port 80 pour Nginx
-EXPOSE 80
+#EXPOSE 80
 
 # Démarrer Nginx pour servir l'application
 CMD ["nginx", "-g", "daemon off;"]
