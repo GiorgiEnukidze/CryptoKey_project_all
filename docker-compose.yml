@@ -20,9 +20,10 @@ services:
       DJANGO_SUPERUSER_USERNAME: admin
       DJANGO_SUPERUSER_PASSWORD: GioTest123
       DJANGO_SUPERUSER_EMAIL: admin@example.com
+      POSTGRES_DB: cryptokey_db_2
       POSTGRES_USER: cryptokey_user_2
       POSTGRES_PASSWORD: GioTest123
-      DB_HOST: db
+      POSTGRES_HOST: db  
     networks:
       - cryptokey_network
     ports:
@@ -49,4 +50,3 @@ networks:
 
 volumes:
   postgres_data:
-
