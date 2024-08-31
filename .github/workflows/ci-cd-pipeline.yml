@@ -81,38 +81,69 @@ jobs:
           name: zap-scan-results
           path: zap-report.html
 
-  scan-with-sonarqube:
+  scan-with-bandit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
+      - name: Install Python
+        uses: actions/setup-python@v2
         with:
-          distribution: 'adopt'
-          java-version: '11'
+          python-version: '3.10'  
 
-      - name: Install SonarScanner
-        run: |
-          sudo apt-get install -y wget unzip
-          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
-          sudo unzip sonar-scanner-cli-4.7.0.2747-linux.zip -d /opt/
-          sudo ln -s /opt/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner
+      - name: Install Bandit
+        run: pip install bandit
 
-      - name: Run SonarQube analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: |
-          sonar-scanner \
-          -Dsonar.projectKey=your_project_key \
-          -Dsonar.sources=. \
-          -Dsonar.host.url=$SONAR_HOST_URL \
-          -Dsonar.login=$SONAR_TOKEN
+      - name: Run Bandit
+        run: bandit -r ./cryptokey_project2 -o bandit_report.json -f json
 
-      - name: Upload SonarQube scan results
+      - name: Upload Bandit results
         uses: actions/upload-artifact@v3
         with:
-          name: sonarqube-scan-results
-          path: .scannerwork/
+          name: bandit-results
+          path: bandit_report.json
+
+  scan-with-flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'  
+
+      - name: Install Flake8
+        run: pip install flake8
+
+      - name: Run Flake8
+        run: flake8 ./cryptokey_project2 > flake8_report.txt
+
+      - name: Upload Flake8 results
+        uses: actions/upload-artifact@v3
+        with:
+          name: flake8-results
+          path: flake8_report.txt
+
+  scan-with-flutter-analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
+      - name: Run Flutter Analyze
+        run: flutter analyze ./crypto_key > flutter_analyze_report.txt
+
+      - name: Upload Flutter Analyze results
+        uses: actions/upload-artifact@v3
+        with:
+          name: flutter-analyze-results
+          path: flutter_analyze_report.txt
+
