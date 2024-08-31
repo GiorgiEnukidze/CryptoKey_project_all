@@ -80,10 +80,8 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     "https://cryptokey.lebourbier.be",  
-    "http://localhost:60888",          
-    "http://192.168.129.78:8000",        
-    "http://192.168.129.9:8000",         
-    "http://localhost",              
+    "https://localhost",  
+    "http://localhost", 
 ]
 
 
@@ -224,14 +222,14 @@ LOGGING = {
 }
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.ionos.fr'
-EMAIL_PORT = 465
-EMAIL_USE_TLS = False  
-EMAIL_USE_SSL = True  
-EMAIL_HOST_USER = 'admin@lebourbier.be'  
-EMAIL_HOST_PASSWORD = '2@Qrr!89Fn!4Ki' 
-DEFAULT_FROM_EMAIL = 'admin@lebourbier.be'  
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.ionos.fr'
+# EMAIL_PORT = 465
+# EMAIL_USE_TLS = False  
+# EMAIL_USE_SSL = True  
+# EMAIL_HOST_USER = 'admin@lebourbier.be'  
+# EMAIL_HOST_PASSWORD = '2@Qrr!89Fn!4Ki' 
+# DEFAULT_FROM_EMAIL = 'admin@lebourbier.be'  
 
 SECURE_SSL_REDIRECT = True  # Rediriger tout le trafic HTTP vers HTTPS
 SESSION_COOKIE_SECURE = True  # Assurez-vous que les cookies de session ne sont envoyés que via HTTPS

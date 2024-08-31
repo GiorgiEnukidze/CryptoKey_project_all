@@ -54,8 +54,11 @@ FROM nginx:alpine
 # Copier les fichiers construits depuis l'étape précédente
 COPY --from=build /app/build/web /usr/share/nginx/html
 
+# Vérification des fichiers copiés (ligne à ajouter pour debug)
+RUN ls -la /usr/share/nginx/html
+
 # Exposer le port 80 pour Nginx
-#EXPOSE 80
+EXPOSE 80
 
 # Démarrer Nginx pour servir l'application
 CMD ["nginx", "-g", "daemon off;"]
