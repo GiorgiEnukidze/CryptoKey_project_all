@@ -18,13 +18,26 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      - name: Build Docker image
-        run: docker build -t myapp-trivy .
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
 
-      - name: Scan Docker image with Trivy
+      - name: Build Docker image for crypto_key
+        run: docker build -t myapp-trivy-crypto-key ./crypto_key
+
+      - name: Build Docker image for cryptokey_project2
+        run: docker build -t myapp-trivy-cryptokey-project2 ./cryptokey_project2
+
+      - name: Scan Docker image with Trivy (crypto_key)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: myapp-trivy
+          image-ref: myapp-trivy-crypto-key
+
+      - name: Scan Docker image with Trivy (cryptokey_project2)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: myapp-trivy-cryptokey-project2
 
   scan-with-clair:
     runs-on: ubuntu-latest
@@ -35,8 +48,16 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      - name: Build Docker image
-        run: docker build -t myapp-clair .
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+
+      - name: Build Docker image for crypto_key
+        run: docker build -t myapp-clair-crypto-key ./crypto_key
+
+      - name: Build Docker image for cryptokey_project2
+        run: docker build -t myapp-clair-cryptokey-project2 ./cryptokey_project2
 
       - name: Install Clairctl
         run: |
@@ -44,10 +65,15 @@ jobs:
           chmod +x clairctl
           sudo mv clairctl /usr/local/bin/
 
-      - name: Scan Docker image with Clair
+      - name: Scan Docker image with Clair (crypto_key)
         run: |
           docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/projectquay/clair:v4.3.2
-          clairctl analyze myapp
+          clairctl analyze myapp-clair-crypto-key
+
+      - name: Scan Docker image with Clair (cryptokey_project2)
+        run: |
+          docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/projectquay/clair:v4.3.2
+          clairctl analyze myapp-clair-cryptokey-project2
 
   scan-with-snyk:
     runs-on: ubuntu-latest
@@ -56,7 +82,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Snyk
-        uses: snyk/actions/setup@v1
+        uses: snyk/actions/setup@v1.1293.0
         with:
           snyk_token: ${{ secrets.SNYK_TOKEN }}
 
@@ -68,6 +94,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
 
       - name: Run web application
         run: docker-compose up -d
