@@ -4,13 +4,14 @@
 set -e
 
 host="$DB_HOST"
-shift
-cmd="$@"
+user="$POSTGRES_USER"
+password="$POSTGRES_PASSWORD"
+db="$POSTGRES_DB"
 
-until PGPASSWORD=$POSTGRES_PASSWORD psql -h "$host" -U "$POSTGRES_USER" -c '\q'; do
+until PGPASSWORD=$password psql -h "$host" -U "$user" -d "$db" -c '\q'; do
   >&2 echo "Postgres is unavailable - sleeping"
   sleep 1
 done
 
 >&2 echo "Postgres is up - executing command"
-exec $cmd
+exec "$@"
