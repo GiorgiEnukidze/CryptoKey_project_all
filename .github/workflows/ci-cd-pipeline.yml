@@ -54,6 +54,12 @@ jobs:
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
 
+      - name: Build Docker image for crypto_key
+        run: docker build -t myapp-clair-crypto-key ./crypto_key
+
+      - name: Build Docker image for cryptokey_project2
+        run: docker build -t myapp-clair-cryptokey-project2 ./cryptokey_project2
+
       - name: Install Clairctl
         run: |
           curl -L https://github.com/quay/clairctl/releases/download/v1.2.10/clairctl-linux-amd64 -o clairctl
@@ -61,12 +67,6 @@ jobs:
           sudo mv clairctl /usr/local/bin/
           ls -l /usr/local/bin/clairctl  # Vérification du fichier téléchargé
           clairctl version  # Test de l'exécution de clairctl pour s'assurer qu'il fonctionne
-          
-      - name: Build Docker image for crypto_key
-        run: docker build -t myapp-clair-crypto-key ./crypto_key
-
-      - name: Build Docker image for cryptokey_project2
-        run: docker build -t myapp-clair-cryptokey-project2 ./cryptokey_project2
 
       - name: Scan Docker image with Clair (crypto_key)
         run: |
@@ -92,7 +92,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: '3.10'
 
       - name: Install Python dependencies for Django
         run: |
