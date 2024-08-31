@@ -42,7 +42,6 @@ jobs:
   scan-with-clair:
     runs-on: ubuntu-latest
     steps:
-    
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -60,23 +59,24 @@ jobs:
       - name: Build Docker image for cryptokey_project2
         run: docker build -t myapp-clair-cryptokey-project2 ./cryptokey_project2
 
-      - name: Install Clair
-        run: |
-          curl -L "https://github.com/quay/clair/releases/download/v4.7.4/clairctl-linux-amd64" -o clairctl
-          chmod +x clairctl
-          sudo mv clairctl /usr/local/bin/clairctl
-          clairctl --help  # Test pour s'assurer que clairctl est correctement installé
-
-
-      - name: Scan Docker image with Clair (crypto_key)
+      - name: Start Clair
         run: |
           docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/projectquay/clair:4.7.4
-          clairctl analyze myapp-clair-crypto-key
 
-      - name: Scan Docker image with Clair (cryptokey_project2)
+      - name: Wait for Clair to be ready
+        run: sleep 30  # Attendre que Clair soit prêt
+
+      - name: Analyze crypto_key image with Clair
         run: |
-          docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/projectquay/clair:4.7.4
-          clairctl analyze myapp-clair-cryptokey-project2
+          curl -X POST -H "Content-Type: application/json" \
+          --data '{"image":{"name":"myapp-clair-crypto-key"}}' \
+          http://localhost:6060/v1/layers
+
+      - name: Analyze cryptokey_project2 image with Clair
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          --data '{"image":{"name":"myapp-clair-cryptokey-project2"}}' \
+          http://localhost:6060/v1/layers
 
   scan-with-snyk:
     runs-on: ubuntu-latest
@@ -85,7 +85,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Snyk
-        uses: snyk/actions@master
+        uses: snyk/actions/setup@v1
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
@@ -105,6 +105,8 @@ jobs:
         run: snyk test --file=cryptokey_project2/requirements.txt --package-manager=pip
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        working-directory: ./cryptokey_project2 
+
 
 
 
