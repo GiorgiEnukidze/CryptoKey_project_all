@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Docker
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Build Docker image
         run: docker build -t myapp-trivy .
@@ -30,10 +30,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Docker
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Build Docker image
         run: docker build -t myapp-clair .
@@ -46,14 +46,14 @@ jobs:
 
       - name: Scan Docker image with Clair
         run: |
-          docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/coreos/clair:v2.1.1
-          clairctl analyze myapp-clair
+          docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/projectquay/clair:v4.3.2
+          clairctl analyze myapp
 
   scan-with-snyk:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Snyk
         uses: snyk/actions/setup@v1
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Run web application
         run: docker-compose up -d
