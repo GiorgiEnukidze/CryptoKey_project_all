@@ -35,7 +35,9 @@ services:
     build:
       context: ./crypto_key
       args:
-        API_URL: "http://localhost:8000/api"
+
+        API_URL: "http://cryptokey.lebourbier.be:8000/api"
+
     ports:
       # - "443:443"
       - 80:80

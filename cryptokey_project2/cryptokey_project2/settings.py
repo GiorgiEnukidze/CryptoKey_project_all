@@ -21,6 +21,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1', 
     'lebourbier.be',
     'cryptokey.lebourbier.be',
+    'web',
 ]
 
 # Application definition
@@ -79,10 +80,16 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "https://cryptokey.lebourbier.be",  
-    "https://localhost",  
-    "http://localhost",
-    "http://localhost:8000",
+
+    "http://cryptokey.lebourbier.be", 
+    "http://cryptokey.lebourbier.be:8000",  
+    "http://localhost:60888",  
+    "http://localhost",         
+    "http://192.168.129.78:8000",        
+    "http://192.168.129.9:8000",         
+    "https://localhost:8000", 
+    "https://localhost:8000",               
+ 
 ]
 
 
