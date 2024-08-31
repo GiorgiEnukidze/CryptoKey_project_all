@@ -61,9 +61,12 @@ jobs:
 
       - name: Install Clairctl
         run: |
-          curl -L https://github.com/jgsqware/clairctl/releases/download/v1.2.10/clairctl-linux-amd64 -o clairctl
+          curl -L https://github.com/quay/clairctl/releases/download/v1.2.10/clairctl-linux-amd64 -o clairctl
           chmod +x clairctl
           sudo mv clairctl /usr/local/bin/
+          
+      - name: Test Clairctl Installation
+        run: clairctl --version
 
       - name: Scan Docker image with Clair (crypto_key)
         run: |
