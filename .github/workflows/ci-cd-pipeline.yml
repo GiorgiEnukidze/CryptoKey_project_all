@@ -65,7 +65,10 @@ jobs:
           docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/projectquay/clair:4.7.4
 
       - name: Wait for Clair to be ready
-        run: sleep 60
+        run: sleep 120
+
+      - name: Check Clair logs
+        run: docker logs clair
 
       - name: Test Clair connection
         run: curl http://localhost:6060/v1/layers 
@@ -82,8 +85,6 @@ jobs:
           --data '{"image":{"name":"myapp-clair-cryptokey-project2"}}' \
           http://localhost:6060/v1/layers
       
-      - name: Check Clair logs
-        run: docker logs clair
 
 
   scan-with-snyk:
@@ -93,7 +94,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Snyk
-        uses: snyk/actions/setup@master
+        uses: snyk/actions/setup@v2  # Utilisation de la version 2 de l'action Snyk
+        with:
+          version: 'v1.1293.0'  # Spécification de la version de Snyk CLI
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
@@ -109,11 +112,18 @@ jobs:
           pip install --upgrade pip
           pip install -r cryptokey_project2/requirements.txt
 
+      - name: Debug Python environment
+        run: |
+          python --version
+          pip --version
+          pip freeze  # Ajout pour vérifier l'environnement Python et les paquets installés
+
       - name: Test for vulnerabilities in Python dependencies
-        run: snyk test --file=cryptokey_project2/requirements.txt --package-manager=pip
+        run: snyk test --file=cryptokey_project2/requirements.txt --package-manager=pip --debug
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        working-directory: ./cryptokey_project2 
+        working-directory: ./cryptokey_project2
+
 
 
 
