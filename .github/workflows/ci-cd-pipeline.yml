@@ -1,0 +1,79 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  scan-with-trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker image
+        run: docker build -t myapp-trivy .
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: myapp-trivy
+
+  scan-with-clair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker image
+        run: docker build -t myapp-clair .
+
+      - name: Install Clairctl
+        run: |
+          curl -L https://github.com/jgsqware/clairctl/releases/download/v1.2.10/clairctl-linux-amd64 -o clairctl
+          chmod +x clairctl
+          sudo mv clairctl /usr/local/bin/
+
+      - name: Scan Docker image with Clair
+        run: |
+          docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/coreos/clair:v2.1.1
+          clairctl analyze myapp-clair
+
+  scan-with-snyk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Snyk
+        uses: snyk/actions/setup@v1
+        with:
+          snyk_token: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Test for vulnerabilities
+        run: snyk test --all-projects
+
+  scan-with-owasp-zap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run web application
+        run: docker-compose up -d
+
+      - name: Scan with OWASP ZAP
+        uses: zaproxy/action-full-scan@v0.6.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: 'http://localhost:8000'
