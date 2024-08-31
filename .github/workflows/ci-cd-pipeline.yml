@@ -18,23 +18,13 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.3'  
+          flutter-version: '3.13.3' # Assurez-vous que c'est la version correcte
 
-      - name: Navigate to Flutter directory and install dependencies
-        run: |
-          cd crypto_key
-          flutter pub get
+      - name: Get Flutter dependencies
+        run: flutter pub get
 
-      - name: Build Flutter Web
-        run: |
-          cd crypto_key
-          flutter build web
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: flutter-web-build
-          path: crypto_key/build/web
+      - name: Build Flutter web app
+        run: flutter build web
 
   scan-with-trivy:
     runs-on: ubuntu-latest
@@ -47,7 +37,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build Docker image
-        run: docker build -t myapp-trivy .
+        run: docker build -t myapp-trivy -f crypto_key/Dockerfile .
 
       - name: Scan Docker image with Trivy
         uses: aquasecurity/trivy-action@master
@@ -65,7 +55,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build Docker image
-        run: docker build -t myapp-clair .
+        run: docker build -t myapp-clair -f crypto_key/Dockerfile .
 
       - name: Install Clairctl
         run: |
