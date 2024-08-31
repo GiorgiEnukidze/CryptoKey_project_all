@@ -79,11 +79,13 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:60888",
-    "http://192.168.129.78:8000",
-    "http://192.168.129.9:8000",
-    "http://localhost",
+    "https://cryptokey.lebourbier.be",  
+    "http://localhost:60888",          
+    "http://192.168.129.78:8000",        
+    "http://192.168.129.9:8000",         
+    "http://localhost",              
 ]
+
 
 CORS_ALLOW_HEADERS = [
     'authorization',
@@ -231,7 +233,13 @@ EMAIL_HOST_USER = 'admin@lebourbier.be'
 EMAIL_HOST_PASSWORD = '2@Qrr!89Fn!4Ki' 
 DEFAULT_FROM_EMAIL = 'admin@lebourbier.be'  
 
-SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = True  # Rediriger tout le trafic HTTP vers HTTPS
+SESSION_COOKIE_SECURE = True  # Assurez-vous que les cookies de session ne sont envoyés que via HTTPS
+CSRF_COOKIE_SECURE = True  # Assurez-vous que les cookies CSRF ne sont envoyés que via HTTPS
+SECURE_HSTS_SECONDS = 31536000  # Active HTTP Strict Transport Security (HSTS)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Inclure les sous-domaines dans la politique HSTS
+SECURE_HSTS_PRELOAD = True  # Permettre à la politique HSTS d'être préchargée par les navigateurs
+
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'localhost'
