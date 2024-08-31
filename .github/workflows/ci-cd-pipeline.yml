@@ -60,34 +60,15 @@ jobs:
       - name: Build Docker image for cryptokey_project2
         run: docker build -t myapp-clair-cryptokey-project2 ./cryptokey_project2
 
-      - name: Create Clair config directory
-        run: mkdir clair-config
-
-      - name: Create Clair config file
-        run: |
-          cat <<EOT >> clair-config/config.yaml
-          clair:
-            database:
-              type: pgsql
-              options:
-                source: postgresql://monutilisateur:monmotdepasse@localhost:5432/clair
-                cachesize: 16384
-            api:
-              addr: :6060
-              healthaddr: :6061
-            updater:
-              interval: 12h
-          EOT
-
       - name: Start Clair
         run: |
           docker run -d --name clair \
+          -v $(pwd)/clair_config/config.yaml:/config/config.yaml \
           -p 6060:6060 -p 6061:6061 \
-          -v $(pwd)/clair-config:/config \
           quay.io/projectquay/clair:4.7.4
 
       - name: Wait for Clair to be ready
-        run: sleep 120
+        run: sleep 60
 
       - name: Check Clair logs
         run: docker logs clair
