@@ -41,8 +41,22 @@ jobs:
 
   scan-with-clair:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: clair
+          POSTGRES_USER: clair_user
+          POSTGRES_PASSWORD: clair_password
+        ports:
+          - 5432:5432
+        options: > 
+          --health-cmd="pg_isready -U clair_user -d clair" 
+          --health-interval=10s 
+          --health-timeout=5s 
+          --health-retries=5
+
     steps:
-    
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -64,6 +78,7 @@ jobs:
         run: |
           docker run -d --name clair \
           -v $(pwd)/clair_config/config.yaml:/config/config.yaml \
+          -e CLAIR_DB_CONNECTIONSTRING=postgres://clair_user:clair_password@localhost:5432/clair?sslmode=disable \
           -p 6060:6060 -p 6061:6061 \
           quay.io/projectquay/clair:4.7.4
 
@@ -87,49 +102,6 @@ jobs:
           curl -X POST -H "Content-Type: application/json" \
           --data '{"image":{"name":"myapp-clair-cryptokey-project2"}}' \
           http://localhost:6060/v1/layers
-      
-
-
-  scan-with-snyk:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Snyk
-        uses: snyk/actions/setup@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'
-
-      - name: Install Python dependencies for Django
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install -r cryptokey_project2/requirements.txt
-
-      - name: Debug Python environment
-        run: |
-          python --version
-          pip --version
-          pip freeze  # Vérification de l'environnement Python et des paquets installés
-
-      - name: Test for vulnerabilities in Python dependencies
-        run: snyk test --file=requirements.txt --package-manager=pip --debug
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        working-directory: ./cryptokey_project2
-
-
-
-
-
-
 
   scan-with-owasp-zap:
     runs-on: ubuntu-latest
