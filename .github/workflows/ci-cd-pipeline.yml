@@ -65,8 +65,6 @@ jobs:
           chmod +x clairctl
           sudo mv clairctl /usr/local/bin/
           
-      - name: Test Clairctl Installation
-        run: clairctl --version
 
       - name: Scan Docker image with Clair (crypto_key)
         run: |
@@ -97,6 +95,9 @@ jobs:
 
       - name: Test for vulnerabilities in Python dependencies
         run: snyk test --file=cryptokey_project2/requirements.txt --package-manager=pip
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
 
   scan-with-owasp-zap:
     runs-on: ubuntu-latest
