@@ -81,19 +81,19 @@ jobs:
           name: zap-scan-results
           path: zap-report.html
 
-  scan-with-bandit:
+  scan-with-flake8-bandit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'  
-
-      - name: Install Bandit
-        run: pip install bandit
+      - name: Install Python dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r cryptokey_project2/requirements.txt
+          pip install bandit flake8
 
       - name: Run Bandit
         run: bandit -r ./cryptokey_project2 -o bandit_report.json -f json --exit-zero
@@ -101,17 +101,26 @@ jobs:
       - name: Upload Bandit results
         uses: actions/upload-artifact@v3
         with:
-          name: bandit-results
+          name: bandit-report
           path: bandit_report.json
 
-  flutter-analysis:
+      - name: Run Flake8
+        run: flake8 ./cryptokey_project2 --exit-zero > flake8_report.txt
+
+      - name: Upload Flake8 results
+        uses: actions/upload-artifact@v3
+        with:
+          name: flake8-report
+          path: flake8_report.txt
+
+  scan-with-flutter-analysis:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
 
       - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@master
         with:
           flutter-version: 'stable'
 
