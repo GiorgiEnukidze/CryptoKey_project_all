@@ -39,69 +39,6 @@ jobs:
         with:
           image-ref: myapp-trivy-cryptokey-project2
 
-  scan-with-clair:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_DB: clair
-          POSTGRES_USER: clair_user
-          POSTGRES_PASSWORD: clair_password
-        ports:
-          - 5432:5432
-        options: > 
-          --health-cmd=pg_isready -U clair_user -d clair 
-          --health-interval=10s 
-          --health-timeout=5s 
-          --health-retries=5
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
-
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-
-      - name: Build Docker image for crypto_key
-        run: docker build -t myapp-clair-crypto-key ./crypto_key
-
-      - name: Build Docker image for cryptokey_project2
-        run: docker build -t myapp-clair-cryptokey-project2 ./cryptokey_project2
-
-      - name: Start Clair
-        run: |
-          docker run -d --name clair \
-          -v $(pwd)/clair_config/config.yaml:/config/config.yaml \
-          -e CLAIR_DB_CONNECTIONSTRING=postgres://clair_user:clair_password@localhost:5432/clair?sslmode=disable \
-          -p 6060:6060 -p 6061:6061 \
-          quay.io/projectquay/clair:4.7.4
-
-      - name: Wait for Clair to be ready
-        run: sleep 60
-
-      - name: Check Clair logs
-        run: docker logs clair
-
-      - name: Test Clair connection
-        run: curl http://localhost:6060/v1/layers
-
-      - name: Analyze crypto_key image with Clair
-        run: |
-          curl -X POST -H "Content-Type: application/json" \
-          --data '{"image":{"name":"myapp-clair-crypto-key"}}' \
-          http://localhost:6060/v1/layers
-
-      - name: Analyze cryptokey_project2 image with Clair
-        run: |
-          curl -X POST -H "Content-Type: application/json" \
-          --data '{"image":{"name":"myapp-clair-cryptokey-project2"}}' \
-          http://localhost:6060/v1/layers
 
   scan-with-owasp-zap:
     runs-on: ubuntu-latest
