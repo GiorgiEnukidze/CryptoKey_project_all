@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@master
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -125,25 +125,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: flutter-analyze-report
-          path: flutter_analyze_report.txt
-
-  scan-with-flutter-analyze:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@master
-
-      - name: Install Flutter manually
-        run: |
-          git clone https://github.com/flutter/flutter.git -b stable --depth 1
-          export PATH="$PATH:`pwd`/flutter/bin"
-          flutter doctor
-
-      - name: Run Flutter Analyze
-        run: flutter analyze ./path_to_your_flutter_project > flutter_analyze_report.txt
-
-      - name: Upload Flutter Analyze results
-        uses: actions/upload-artifact@v3
-        with:
-          name: flutter-analyze-results
           path: flutter_analyze_report.txt
