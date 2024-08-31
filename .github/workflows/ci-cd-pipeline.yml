@@ -104,28 +104,28 @@ jobs:
           name: bandit-results
           path: bandit_report.json
 
-  scan-with-flake8:
+  flutter-analysis:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Python
-        uses: actions/setup-python@v2
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          python-version: '3.10'  
+          flutter-version: 'stable'
 
-      - name: Install Flake8
-        run: pip install flake8
+      - name: Install Flutter dependencies
+        run: flutter pub get
 
-      - name: Run Flake8
-        run: flake8 ./cryptokey_project2 --exit-zero > flake8_report.txt
+      - name: Run Flutter analyze
+        run: flutter analyze ./path_to_your_flutter_project > flutter_analyze_report.txt
 
-      - name: Upload Flake8 results
+      - name: Upload Flutter analyze results
         uses: actions/upload-artifact@v3
         with:
-          name: flake8-results
-          path: flake8_report.txt
+          name: flutter-analyze-report
+          path: flutter_analyze_report.txt
 
   scan-with-flutter-analyze:
     runs-on: ubuntu-latest
