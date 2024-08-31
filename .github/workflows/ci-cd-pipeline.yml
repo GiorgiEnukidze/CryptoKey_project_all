@@ -20,17 +20,21 @@ jobs:
         with:
           flutter-version: '3.3.0'
 
-      - name: Install dependencies
-        run: flutter pub get
+      - name: Navigate to Flutter directory and install dependencies
+        run: |
+          cd crypto_key
+          flutter pub get
 
       - name: Build Flutter Web
-        run: flutter build web
+        run: |
+          cd crypto_key
+          flutter build web
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
         with:
           name: flutter-web-build
-          path: build/web
+          path: crypto_key/build/web
 
   scan-with-trivy:
     runs-on: ubuntu-latest
