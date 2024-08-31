@@ -117,13 +117,14 @@ jobs:
         run: |
           python --version
           pip --version
-          pip freeze  # Ajout pour vérifier l'environnement Python et les paquets installés
+          pip freeze  # Vérification de l'environnement Python et des paquets installés
 
       - name: Test for vulnerabilities in Python dependencies
-        run: snyk test --file=cryptokey_project2/requirements.txt --package-manager=pip --debug
+        run: snyk test --file=requirements.txt --package-manager=pip --debug
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         working-directory: ./cryptokey_project2
+
 
 
 
