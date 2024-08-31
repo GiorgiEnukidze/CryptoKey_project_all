@@ -67,12 +67,12 @@ jobs:
 
       - name: Scan Docker image with Clair (crypto_key)
         run: |
-          docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/projectquay/clair:latest
+          docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/projectquay/clair:4.7.4
           clairctl analyze myapp-clair-crypto-key
 
       - name: Scan Docker image with Clair (cryptokey_project2)
         run: |
-          docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/projectquay/clair:latest
+          docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/projectquay/clair:4.7.4
           clairctl analyze myapp-clair-cryptokey-project2
 
   scan-with-snyk:
@@ -82,7 +82,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Snyk
-        uses: snyk/actions/setup@v2.319.1
+        uses: snyk/actions/setup@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
