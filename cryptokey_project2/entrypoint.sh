@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Attendre que la base de données soit prête
+/app/wait_for_db.sh
+
 # Appliquer les migrations
 python manage.py migrate
 
