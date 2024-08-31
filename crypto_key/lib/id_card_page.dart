@@ -28,7 +28,7 @@ class _IdCardPageState extends State<IdCardPage> {
     }
 
     final response = await http.get(
-      Uri.parse('http://$apiUrl/identities/'),
+      Uri.parse('$apiUrl/identities/'),
       headers: {
         'Authorization': 'Bearer $token',
       },

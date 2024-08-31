@@ -50,7 +50,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
   Future<void> _deleteUser(int userId) async {
     final response = await http.delete(
-      Uri.parse('h$apiUrl/users/$userId/delete/'),
+      Uri.parse('$apiUrl/users/$userId/delete/'),
       headers: {'Authorization': 'Bearer ${widget.token}'},
     );
 
