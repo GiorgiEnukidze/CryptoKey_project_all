@@ -9,8 +9,32 @@ on:
       - main
 
 jobs:
+  build-flutter-web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.3.0'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Flutter Web
+        run: flutter build web
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: flutter-web-build
+          path: build/web
+
   scan-with-trivy:
     runs-on: ubuntu-latest
+    needs: build-flutter-web
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -18,29 +42,17 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
+      - name: Build Docker image
+        run: docker build -t myapp-trivy .
 
-      - name: Build Docker image for crypto_key
-        run: docker build -t myapp-trivy-crypto-key ./crypto_key
-
-      - name: Build Docker image for cryptokey_project2
-        run: docker build -t myapp-trivy-cryptokey-project2 ./cryptokey_project2
-
-      - name: Scan Docker image with Trivy (crypto_key)
+      - name: Scan Docker image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: myapp-trivy-crypto-key
-
-      - name: Scan Docker image with Trivy (cryptokey_project2)
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: myapp-trivy-cryptokey-project2
+          image-ref: myapp-trivy
 
   scan-with-clair:
     runs-on: ubuntu-latest
+    needs: build-flutter-web
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -48,16 +60,8 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-
-      - name: Build Docker image for crypto_key
-        run: docker build -t myapp-clair-crypto-key ./crypto_key
-
-      - name: Build Docker image for cryptokey_project2
-        run: docker build -t myapp-clair-cryptokey-project2 ./cryptokey_project2
+      - name: Build Docker image
+        run: docker build -t myapp-clair .
 
       - name: Install Clairctl
         run: |
@@ -65,40 +69,41 @@ jobs:
           chmod +x clairctl
           sudo mv clairctl /usr/local/bin/
 
-      - name: Scan Docker image with Clair (crypto_key)
+      - name: Scan Docker image with Clair
         run: |
-          docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/projectquay/clair:v4.3.2
-          clairctl analyze myapp-clair-crypto-key
-
-      - name: Scan Docker image with Clair (cryptokey_project2)
-        run: |
-          docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/projectquay/clair:v4.3.2
-          clairctl analyze myapp-clair-cryptokey-project2
+          docker run -d --name clair -p 6060:6060 -p 6061:6061 quay.io/coreos/clair:v2.1.1
+          clairctl analyze myapp-clair
 
   scan-with-snyk:
     runs-on: ubuntu-latest
+    needs: build-flutter-web
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Snyk
-        uses: snyk/actions/setup@v1.1293.0
-        with:
-          snyk_token: ${{ secrets.SNYK_TOKEN }}
+        uses: snyk/actions/setup@v1
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      - name: Test for vulnerabilities
-        run: snyk test --all-projects
+      - name: Install Python dependencies for Django
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r cryptokey_project2/requirements.txt
+
+      - name: Test for vulnerabilities in Python dependencies
+        run: snyk test --file=cryptokey_project2/requirements.txt --package-manager=pip
 
   scan-with-owasp-zap:
     runs-on: ubuntu-latest
+    needs: build-flutter-web
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
+        run: sudo apt-get install docker-compose
 
       - name: Run web application
         run: docker-compose up -d
