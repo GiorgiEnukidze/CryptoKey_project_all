@@ -62,11 +62,11 @@ jobs:
 
       - name: Install Clairctl
         run: |
-          curl -L https://github.com/quay/clairctl/releases/download/v1.2.10/clairctl-linux-amd64 -o clairctl
+          curl -L "https://github.com/quay/clairctl/releases/download/v1.2.10/clairctl-linux-amd64" -o clairctl
           chmod +x clairctl
-          sudo mv clairctl /usr/local/bin/
-          ls -l /usr/local/bin/clairctl  # Vérification du fichier téléchargé
-          clairctl version  # Test de l'exécution de clairctl pour s'assurer qu'il fonctionne
+          sudo mv clairctl /usr/local/bin/clairctl
+          clairctl --help  # Test pour s'assurer que clairctl est correctement installé
+
 
       - name: Scan Docker image with Clair (crypto_key)
         run: |
@@ -85,7 +85,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Snyk
-        uses: snyk/actions/setup@master
+        uses: snyk/actions/setup@v2
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
@@ -105,6 +105,7 @@ jobs:
         run: snyk test --file=cryptokey_project2/requirements.txt --package-manager=pip
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
 
 
   scan-with-owasp-zap:
