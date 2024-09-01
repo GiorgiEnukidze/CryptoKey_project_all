@@ -18,7 +18,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void _register() async {
     if (_passwordController.text == _confirmPasswordController.text) {
       var response = await http.post(
-        Uri.parse('$apiUrl/register/'),
+        Uri.parse('$apiUrl/api/register/'),
         body: {
           'username': _usernameController.text,
           'password': _passwordController.text,

@@ -35,18 +35,33 @@ services:
     build:
       context: ./crypto_key
       args:
-
-        API_URL: "http://cryptokey.lebourbier.be:8000/api"
-
+        API_URL: "http://localhost:8000/api"
     ports:
-      # - "443:443"
       - 80:80
     networks:
       - cryptokey_network
-    # volumes:
-    #   - ./crypto_key/build/web:/usr/share/nginx/html
     depends_on:
       - web
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    networks:
+      - cryptokey_network
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - cryptokey_network
+    depends_on:
+      - prometheus
 
 networks:
   cryptokey_network:

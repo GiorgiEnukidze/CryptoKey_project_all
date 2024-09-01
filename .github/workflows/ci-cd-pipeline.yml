@@ -71,9 +71,7 @@ jobs:
         uses: zaproxy/action-full-scan@v0.6.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          target: 'http://localhost:8000'
-          format: 'html'
-          report-path: 'zap-report.html'
+          target: 'http://web:8000' 
 
       - name: Upload ZAP scan results
         uses: actions/upload-artifact@v3

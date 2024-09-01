@@ -34,11 +34,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_prometheus',
     'rest_framework_simplejwt',  
     'api',  
     'corsheaders',
     'django_ratelimit',
-    'django_prometheus',
+    
 ]
 
 REST_FRAMEWORK = {
@@ -88,7 +89,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost",         
     "http://192.168.129.78:8000",        
     "http://192.168.129.9:8000",         
-    "https://localhost:8000", 
+    "http://localhost:8000", 
     "https://localhost:8000",               
  
 ]
@@ -111,19 +112,20 @@ CORS_ALLOW_METHODS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
-    'django_prometheus.middleware.PrometheusAfterMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.common.CommonMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'api.logging_middleware.LoggingMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
+
+
 
 ROOT_URLCONF = 'cryptokey_project2.urls'
 
