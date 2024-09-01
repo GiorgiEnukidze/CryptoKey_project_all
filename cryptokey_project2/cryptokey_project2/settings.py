@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'api',  
     'corsheaders',
     'django_ratelimit',
+    'django_prometheus',
 ]
 
 REST_FRAMEWORK = {
@@ -112,6 +113,8 @@ CORS_ALLOW_METHODS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
