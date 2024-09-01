@@ -11,13 +11,6 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     networks:
       - cryptokey_network
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints:
-          - node.role == manager
 
   web:
     build:
@@ -37,32 +30,23 @@ services:
       - "8000:8000"
     depends_on:
       - db
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints:
-          - node.role == worker
 
   frontend:
     build:
       context: ./crypto_key
       args:
+
         API_URL: "http://cryptokey.lebourbier.be:8000/api"
+
     ports:
-      - "80:80"
+      # - "443:443"
+      - 80:80
     networks:
       - cryptokey_network
+    # volumes:
+    #   - ./crypto_key/build/web:/usr/share/nginx/html
     depends_on:
       - web
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints:
-          - node.role == worker
 
 networks:
   cryptokey_network:
