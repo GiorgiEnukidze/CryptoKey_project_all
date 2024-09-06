@@ -50,7 +50,7 @@ class _AddNotePageState extends State<AddNotePage> {
 
       // Envoyer les données au backend
       final response = await http.post(
-        Uri.parse('$apiUrl/notes/add/'), // Assurez-vous que l'URL de l'API est correcte
+        Uri.parse('$apiUrl/api/notes/add/'), // Assurez-vous que l'URL de l'API est correcte
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

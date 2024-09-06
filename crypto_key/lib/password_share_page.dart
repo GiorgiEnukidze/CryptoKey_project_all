@@ -33,7 +33,7 @@ class _PasswordSharePageState extends State<PasswordSharePage> {
     }
 
     final response = await http.get(
-      Uri.parse('$apiUrl/passwords/'),
+      Uri.parse('$apiUrl/api/passwords/'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -61,7 +61,7 @@ class _PasswordSharePageState extends State<PasswordSharePage> {
     }
 
     final response = await http.get(
-      Uri.parse('$apiUrl/share/'),
+      Uri.parse('$apiUrl/api/share/'),
       headers: {'Authorization': 'Bearer $token'},
     );
 
@@ -90,7 +90,7 @@ class _PasswordSharePageState extends State<PasswordSharePage> {
     }
 
     final response = await http.post(
-      Uri.parse('$apiUrl/share/'),
+      Uri.parse('$apiUrl/api/share/'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

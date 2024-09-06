@@ -28,7 +28,7 @@ class _EncryptionKeyPageState extends State<EncryptionKeyPage> {
     }
 
     final response = await http.get(
-      Uri.parse('$apiUrl/keys/'),
+      Uri.parse('$apiUrl/api/keys/'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -52,7 +52,7 @@ class _EncryptionKeyPageState extends State<EncryptionKeyPage> {
     }
 
     final response = await http.patch(
-      Uri.parse('$apiUrl/keys/update/$keyId/'),
+      Uri.parse('$apiUrl/api/keys/update/$keyId/'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ class _EncryptionKeyPageState extends State<EncryptionKeyPage> {
       }
 
       final response = await http.delete(
-        Uri.parse('$apiUrl/keys/delete/$keyId/'),
+        Uri.parse('$apiUrl/api/keys/delete/$keyId/'),
         headers: {
           'Authorization': 'Bearer $token',
         },

@@ -28,7 +28,7 @@ class _IdCardPageState extends State<IdCardPage> {
     }
 
     final response = await http.get(
-      Uri.parse('$apiUrl/identities/'),
+      Uri.parse('$apiUrl/api/identities/'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -60,7 +60,7 @@ class _IdCardPageState extends State<IdCardPage> {
     }
 
     final response = await http.patch(
-      Uri.parse('$apiUrl/identities/update/$cardId/'),
+      Uri.parse('$apiUrl/api/identities/update/$cardId/'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ class _IdCardPageState extends State<IdCardPage> {
       }
 
       final response = await http.delete(
-        Uri.parse('$apiUrl/identities/delete/$cardId/'),
+        Uri.parse('$apiUrl/api/identities/delete/$cardId/'),
         headers: {
           'Authorization': 'Bearer $token',
         },

@@ -8,7 +8,7 @@ class AuthenticationService {
 
   Future<String?> login(String username, String password) async {
     final response = await http.post(
-      Uri.parse('$apiUrl/token/'),
+      Uri.parse('$apiUrl/api/token/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'username': username, 'password': password}),
     );
@@ -29,7 +29,7 @@ class AuthenticationService {
 
   Future<void> send2FACode(String username, String code2FA) async {
     await http.post(
-      Uri.parse('$apiUrl/send_2fa/'),
+      Uri.parse('$apiUrl/api/send_2fa/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'username': username, 'code': code2FA}),
     );

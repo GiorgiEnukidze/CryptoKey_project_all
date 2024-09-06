@@ -34,7 +34,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   Future<void> _fetchStatistics() async {
     try {
       final response = await http.get(
-        Uri.parse('$apiUrl/statistics/'),
+        Uri.parse('$apiUrl/api/statistics/'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer ${widget.token}',

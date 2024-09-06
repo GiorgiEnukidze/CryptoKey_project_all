@@ -45,7 +45,7 @@ class _AddBankCardPageState extends State<AddBankCardPage> {
     List<String> dateParts = expirationDate.split('/');
     String formattedExpirationDate = '${dateParts[2]}-${dateParts[1]}-${dateParts[0]}';
 
-    var url = Uri.parse('$apiUrl/cards/add/');
+    var url = Uri.parse('$apiUrl/api/cards/add/');
     var response = await http.post(
       url,
       headers: {

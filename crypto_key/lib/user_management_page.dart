@@ -25,7 +25,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
   Future<void> _fetchUsers() async {
     final response = await http.get(
-      Uri.parse('$apiUrl/users/'),
+      Uri.parse('$apiUrl/api/users/'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer ${widget.token}',
@@ -50,7 +50,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
   Future<void> _deleteUser(int userId) async {
     final response = await http.delete(
-      Uri.parse('$apiUrl/users/$userId/delete/'),
+      Uri.parse('$apiUrl/api/users/$userId/delete/'),
       headers: {'Authorization': 'Bearer ${widget.token}'},
     );
 
@@ -122,7 +122,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               child: Text('Save'),
               onPressed: () async {
                 final response = await http.patch(
-                  Uri.parse('$apiUrl/users/$userId/update/'),
+                  Uri.parse('$apiUrl/api/users/$userId/update/'),
                   headers: {
                     'Content-Type': 'application/json; charset=UTF-8',
                     'Authorization': 'Bearer ${widget.token}',
@@ -157,7 +157,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
 Future<List<Map<String, String>>> _fetchUserPasswords(int userId) async {
   try {
     final response = await http.get(
-      Uri.parse('$apiUrl/users/$userId/passwords/'),
+      Uri.parse('$apiUrl/api/users/$userId/passwords/'),
       headers: {
         'Authorization': 'Bearer ${widget.token}',
         'Content-Type': 'application/json',
@@ -264,7 +264,7 @@ void _notifyUser(int userId, String siteName) async {
   print('Notifying user $userId about site: $siteName');
   try {
     final response = await http.post(
-      Uri.parse('$apiUrl/users/$userId/notify_password_leak/'),
+      Uri.parse('$apiUrl/api/users/$userId/notify_password_leak/'),
       headers: {
         'Authorization': 'Bearer ${widget.token}',
         'Content-Type': 'application/json',

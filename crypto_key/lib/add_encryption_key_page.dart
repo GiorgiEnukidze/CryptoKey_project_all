@@ -43,7 +43,7 @@ class _AddEncryptionKeyPageState extends State<AddEncryptionKeyPage> {
       print('Data to send: $data');
 
       final response = await http.post(
-        Uri.parse('$apiUrl/keys/add/'),
+        Uri.parse('$apiUrl/api/keys/add/'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

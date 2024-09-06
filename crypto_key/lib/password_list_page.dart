@@ -122,7 +122,7 @@ class _PasswordListPageState extends State<PasswordListPage> {
     }
 
     final response = await http.get(
-      Uri.parse('$apiUrl/passwords/'),
+      Uri.parse('$apiUrl/api/passwords/'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -151,7 +151,7 @@ class _PasswordListPageState extends State<PasswordListPage> {
     }
 
     final response = await http.get(
-      Uri.parse('$apiUrl/share/'),
+      Uri.parse('$apiUrl/api/share/'),
       headers: {'Authorization': 'Bearer $token'},
     );
 
@@ -184,7 +184,7 @@ class _PasswordListPageState extends State<PasswordListPage> {
     }
 
     final response = await http.delete(
-      Uri.parse('$apiUrl/share/delete/$passwordId/'),
+      Uri.parse('$apiUrl/api/share/delete/$passwordId/'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -212,7 +212,7 @@ class _PasswordListPageState extends State<PasswordListPage> {
     }
 
     final response = await http.patch(
-      Uri.parse('$apiUrl/passwords/update/$passwordId/'),
+      Uri.parse('$apiUrl/api/passwords/update/$passwordId/'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -247,7 +247,7 @@ class _PasswordListPageState extends State<PasswordListPage> {
       }
 
       final response = await http.delete(
-        Uri.parse('$apiUrl/passwords/delete/$passwordId/'),
+        Uri.parse('$apiUrl/api/passwords/delete/$passwordId/'),
         headers: {
           'Authorization': 'Bearer $token',
         },

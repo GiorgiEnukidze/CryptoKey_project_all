@@ -24,7 +24,7 @@ class _PasswordExportPageState extends State<PasswordExportPage> {
       }
 
       final response = await http.post(
-        Uri.parse('$apiUrl/export/'),
+        Uri.parse('$apiUrl/api/export/'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

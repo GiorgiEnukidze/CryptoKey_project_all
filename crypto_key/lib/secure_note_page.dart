@@ -61,7 +61,7 @@ class _SecureNotePageState extends State<SecureNotePage> {
     }
 
     final response = await http.get(
-      Uri.parse('$apiUrl/secure_notes/'),
+      Uri.parse('$apiUrl/api/secure_notes/'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -91,7 +91,7 @@ class _SecureNotePageState extends State<SecureNotePage> {
     }
 
     final response = await http.patch(
-      Uri.parse('$apiUrl/secure_notes/update/$noteId/'),
+      Uri.parse('$apiUrl/api/secure_notes/update/$noteId/'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ class _SecureNotePageState extends State<SecureNotePage> {
       }
 
       final response = await http.delete(
-        Uri.parse('$apiUrl/secure_notes/delete/$noteId/'),
+        Uri.parse('$apiUrl/api/secure_notes/delete/$noteId/'),
         headers: {
           'Authorization': 'Bearer $token',
         },

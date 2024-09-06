@@ -81,7 +81,7 @@ class _AddIdCardPageState extends State<AddIdCardPage> {
     print('Date of Issue: $dateOfIssue');
     print('Expiry Date: $expiryDate');
 
-    var url = Uri.parse('$apiUrl/identities/add/');
+    var url = Uri.parse('$apiUrl/api/identities/add/');
     var response = await http.post(
       url,
       headers: {

@@ -47,7 +47,7 @@ class _PasswordImportPageState extends State<PasswordImportPage> {
 
           final request = http.MultipartRequest(
             'POST',
-            Uri.parse('$apiUrl/import/'),
+            Uri.parse('$apiUrl/api/import/'),
           );
 
           request.headers['Authorization'] = 'Bearer $token';

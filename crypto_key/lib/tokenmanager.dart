@@ -54,7 +54,7 @@ class TokenManager {
     }
 
     final response = await http.post(
-      Uri.parse('$apiUrl/token/refresh/'),
+      Uri.parse('$apiUrl/api/token/refresh/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'refresh': refreshToken}),
     );

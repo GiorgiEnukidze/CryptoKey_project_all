@@ -77,7 +77,7 @@ class _AddPasswordPageState extends State<AddPasswordPage> {
       print('hello3');
       // Envoyer les données au backend
       final response = await http.post(
-        Uri.parse('$apiUrl/passwords/add/'),
+        Uri.parse('$apiUrl/api/passwords/add/'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

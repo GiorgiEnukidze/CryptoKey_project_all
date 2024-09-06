@@ -28,7 +28,7 @@ class _BankCardPageState extends State<BankCardPage> {
     }
 
     final response = await http.get(
-      Uri.parse('$apiUrl/cards/'),
+      Uri.parse('$apiUrl/api/cards/'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -57,7 +57,7 @@ class _BankCardPageState extends State<BankCardPage> {
     }
 
     final response = await http.patch(
-      Uri.parse('$apiUrl/cards/update/$cardId/'),
+      Uri.parse('$apiUrl/api/cards/update/$cardId/'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ class _BankCardPageState extends State<BankCardPage> {
     }
 
     final response = await http.delete(
-      Uri.parse('$apiUrl/cards/delete/$cardId/'),
+      Uri.parse('$apiUrl/api/cards/delete/$cardId/'),
       headers: {
         'Authorization': 'Bearer $token',
       },
