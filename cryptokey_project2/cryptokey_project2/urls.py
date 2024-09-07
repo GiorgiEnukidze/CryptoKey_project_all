@@ -8,5 +8,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     path('', RedirectView.as_view(url='/api/')),  # Redirige l'URL racine vers l'API
-    path('metrics/', include('django_prometheus.urls')),  # Expose les métriques à /metric
+    # path('metrics/', include('django_prometheus.urls')),  # Expose les métriques à /metric
 ]

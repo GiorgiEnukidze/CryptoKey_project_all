@@ -26,7 +26,7 @@ class LoginPage extends StatelessWidget {
         ));
 
         // Vérifiez si les identifiants correspondent à ceux de l'administrateur
-        if (username == 'admin' && password == 'GioTest123*') {
+        if (username == 'admin' && password == 'GioTest123') {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => AdminPage()),

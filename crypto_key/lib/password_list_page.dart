@@ -13,6 +13,8 @@ import 'package:flutter_kryptokey_1/password_export_page.dart';
 import 'package:flutter_kryptokey_1/password_import_page.dart';
 import 'package:flutter_kryptokey_1/password_share_page.dart';
 import 'config.dart';
+import 'login_page.dart';  
+
 
 // Fonction pour vérifier la solidité des mots de passe
 List<dynamic> checkPasswordStrength(String password) {
@@ -367,11 +369,17 @@ class _PasswordListPageState extends State<PasswordListPage> {
                 );
               },
             ),
-            ListTile(
-              title: Text('Logout'),
-              onTap: () {
-                Navigator.pop(context);
-                // Ajouter ici la logique de déconnexion
+           ListTile(
+              title: Text('Logout', style: TextStyle(color: Colors.red)),
+              onTap: () async {
+                // Supprime le token d'authentification
+                await storage.delete(key: 'auth_token');
+
+                // Redirige vers la page de connexion et empêche de revenir en arrière
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  (Route<dynamic> route) => false,
+                );
               },
             ),
           ],

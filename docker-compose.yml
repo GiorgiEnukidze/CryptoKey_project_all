@@ -35,7 +35,7 @@ services:
     build:
       context: ./crypto_key
       args:
-        API_URL: "http://cryptokey.lebourbier.be"
+        API_URL: "https://cryptokey.lebourbier.be"
     ports:
       - 80:80
     networks:
@@ -43,25 +43,25 @@ services:
     depends_on:
       - web
 
-  prometheus:
-    image: prom/prometheus
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    ports:
-      - "9090:9090"
-    networks:
-      - cryptokey_network
+  # prometheus:
+  #   image: prom/prometheus
+  #   volumes:
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  #   command:
+  #     - '--config.file=/etc/prometheus/prometheus.yml'
+  #   ports:
+  #     - "9090:9090"
+  #   networks:
+  #     - cryptokey_network
 
-  grafana:
-    image: grafana/grafana
-    ports:
-      - "3000:3000"
-    networks:
-      - cryptokey_network
-    depends_on:
-      - prometheus
+  # grafana:
+  #   image: grafana/grafana
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - cryptokey_network
+  #   depends_on:
+  #     - prometheus
 
 networks:
   cryptokey_network:
