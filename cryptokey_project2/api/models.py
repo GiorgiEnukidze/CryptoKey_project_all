@@ -59,19 +59,16 @@ class PasswordEntry(models.Model):
 class SecureNote(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
-    encrypted_content = models.TextField()  # Champ pour stocker le contenu chiffré de la note
+    encrypted_content = models.TextField()  # Champ pour stocker le contenu chiffré
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
 
-    def save(self, *args, **kwargs):
-        if self.encrypted_content:
-            self.encrypted_content = encrypt_data(self.encrypted_content)  # Chiffrer le contenu avant de l'enregistrer
-        super().save(*args, **kwargs)
-
     def get_content(self):
+        return decrypt_data(self.encrypted_content)
+
         return decrypt_data(self.encrypted_content)  # Déchiffrer et renvoyer le contenu de la note
 
 class CreditCard(models.Model):

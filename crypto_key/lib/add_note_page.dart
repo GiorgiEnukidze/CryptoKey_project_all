@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decode/jwt_decode.dart';
-import 'package:flutter_kryptokey_1/secure_note_page.dart'; 
+import 'package:flutter_kryptokey_1/secure_note_page.dart';
+import 'package:cryptography/cryptography.dart'; // Ajouté pour le chiffrement
 import 'config.dart';
 
 class AddNotePage extends StatefulWidget {
@@ -14,8 +15,30 @@ class AddNotePage extends StatefulWidget {
 class _AddNotePageState extends State<AddNotePage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
+  final storage = const FlutterSecureStorage(); // Initialisation du stockage sécurisé
+  final String _encryptionKey = 'vO1IpBzkzAjN9It1dOh8h0d9g1T9R9cYGKwBdpxB21g=';
+  final algorithm = AesGcm.with256bits();
 
-  final storage = const FlutterSecureStorage(); // Initialisez le stockage sécurisé
+  // Fonction pour chiffrer les données
+  Future<String> encryptData(String content) async {
+    try {
+      final keyBytes = base64.decode(_encryptionKey);
+      final secretKey = SecretKey(keyBytes);
+
+      final nonce = algorithm.newNonce(); // Générer un nonce
+      final secretBox = await algorithm.encrypt(
+        content.codeUnits, // Convertir le contenu en liste d'unités de code
+        secretKey: secretKey,
+        nonce: nonce,
+      );
+
+      // Concaténer le nonce et les données chiffrées pour les envoyer au backend
+      return base64.encode(nonce + secretBox.cipherText);
+    } catch (e) {
+      print('Encryption error: $e');
+      throw Exception('Error encrypting data');
+    }
+  }
 
   Future<void> _saveNote() async {
     try {
@@ -27,26 +50,21 @@ class _AddNotePageState extends State<AddNotePage> {
 
       // Récupérer l'ID utilisateur à partir du token JWT
       Map<String, dynamic> decodedToken = Jwt.parseJwt(token);
-      print('Decoded token: $decodedToken'); // Ajouter ce print pour vérifier le token
       String? userId = decodedToken['user_id']?.toString();
-      print('User ID: $userId'); // Ajouter ce print pour vérifier l'ID utilisateur
-
       if (userId == null) {
         print('User ID not found in token');
         return;
-      } else {
-        print('User ID is also found in token');
       }
+
+      // Chiffrer le contenu de la note avant de l'envoyer
+      String encryptedContent = await encryptData(_contentController.text);
 
       // Construire les données à envoyer
       Map<String, dynamic> data = {
         'user': userId,
         'title': _titleController.text,
-        'content': _contentController.text,
+        'content': encryptedContent, // Utiliser le contenu chiffré
       };
-
-      // Afficher les données à envoyer à la console
-      print('Data to send: $data');
 
       // Envoyer les données au backend
       final response = await http.post(

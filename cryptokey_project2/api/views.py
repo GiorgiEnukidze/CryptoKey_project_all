@@ -30,7 +30,7 @@ from django.views.decorators.http import require_http_methods
 from django.conf import settings
 import csv
 import json
-from .models import PasswordEntry, SecureNote, CreditCard, IdentityCard, EncryptionKey, PasswordEntry, PasswordShare, Log
+from .models import PasswordEntry, SecureNote, CreditCard, IdentityCard, EncryptionKey, PasswordEntry, PasswordShare, Log, decrypt_data, encrypt_data
 from .serializers import (
     PasswordEntrySerializer, SecureNoteSerializer,
     CardSerializer, IdentitySerializer,
@@ -727,7 +727,7 @@ def delete_password(request, password_id):
 ################### SECURE NOTE ##########################
 
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def add_secure_note(request):
     if request.method == 'POST':
@@ -739,10 +739,13 @@ def add_secure_note(request):
             if not title or not content:
                 return JsonResponse({'message': 'All fields are required'}, status=400)
 
+            # Chiffrer le contenu avant de le sauvegarder
+            encrypted_content = encrypt_data(content)
+
             secure_note = SecureNote.objects.create(
                 user=request.user,
                 title=title,
-                content=content
+                encrypted_content=encrypted_content
             )
             secure_note.save()
 
@@ -753,6 +756,7 @@ def add_secure_note(request):
     else:
         return JsonResponse({'message': 'Method not allowed'}, status=405)
 
+
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
 def update_secure_note(request, note_id):
@@ -762,14 +766,49 @@ def update_secure_note(request, note_id):
         except SecureNote.DoesNotExist:
             return JsonResponse({'message': 'Secure note does not exist'}, status=404)
 
-        secure_note.title = request.data.get('title', secure_note.title)
-        secure_note.content = request.data.get('content', secure_note.content)
+        title = request.data.get('title', secure_note.title)
+        content = request.data.get('content', None)
+
+        if content:
+            secure_note.encrypted_content = encrypt_data(content)  # Chiffrer le nouveau contenu
+
+        secure_note.title = title
         secure_note.save()
 
         serializer = SecureNoteSerializer(secure_note)
         return JsonResponse(serializer.data, status=200)
-    
+
     return JsonResponse({'message': 'Method not allowed'}, status=405)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def secure_note_list(request):
+    if request.method == 'GET':
+        try:
+            secure_notes = SecureNote.objects.filter(user=request.user)
+            notes_data = []
+
+            for note in secure_notes:
+                try:
+                    if note.encrypted_content:  # Assurez-vous que les données existent
+                        decrypted_content = decrypt_data(note.encrypted_content)
+                    else:
+                        decrypted_content = "No content to decrypt"
+                except Exception as e:
+                    decrypted_content = "Error decrypting content"
+
+                notes_data.append({
+                    'id': note.id,
+                    'title': note.title,
+                    'content': decrypted_content  # Retourner le contenu déchiffré ou une erreur
+                })
+
+            return JsonResponse(notes_data, safe=False)
+        except Exception as e:
+            return JsonResponse({'message': 'Error retrieving notes', 'error': str(e)}, status=500)
+    return JsonResponse({'message': 'Method not allowed'}, status=405)
+
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
@@ -784,16 +823,10 @@ def delete_secure_note(request, note_id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-@login_required
-def secure_note_list(request):
-    secure_notes = SecureNote.objects.filter(user=request.user)
-    return render(request, 'secure_note_list.html', {'secure_notes': secure_notes})
-
 
 
 
 ################### CREDIT CARD ##########################
-
 
 
 @api_view(['POST'])
@@ -810,9 +843,12 @@ def add_credit_card(request):
             if not card_number or not expiry_date or not cvv or not cardholder_name:
                 return JsonResponse({'message': 'All fields are required'}, status=400)
 
+            # Chiffrer le numéro de carte avant de l'enregistrer
+            encrypted_card_number = encrypt_data(card_number)
+
             credit_card = CreditCard.objects.create(
                 user=request.user,
-                card_number=card_number,
+                encrypted_card_number=encrypted_card_number,
                 expiry_date=expiry_date,
                 cvv=cvv,
                 cardholder_name=cardholder_name
@@ -829,22 +865,22 @@ def add_credit_card(request):
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
 def update_credit_card(request, card_id):
-    if request.method == 'PATCH':
-        try:
-            credit_card = CreditCard.objects.get(id=card_id, user=request.user)
-        except CreditCard.DoesNotExist:
-            return JsonResponse({'message': 'Credit card does not exist'}, status=404)
+    try:
+        credit_card = CreditCard.objects.get(id=card_id, user=request.user)
+    except CreditCard.DoesNotExist:
+        return JsonResponse({'message': 'Credit card does not exist'}, status=404)
 
-        credit_card.card_number = request.data.get('card_number', credit_card.card_number)
-        credit_card.expiry_date = request.data.get('expiry_date', credit_card.expiry_date)
-        credit_card.cvv = request.data.get('cvv', credit_card.cvv)
-        credit_card.cardholder_name = request.data.get('cardholder_name', credit_card.cardholder_name)
-        credit_card.save()
+    card_number = request.data.get('card_number', None)
+    if card_number:
+        credit_card.encrypted_card_number = encrypt_data(card_number)
 
-        serializer = CardSerializer(credit_card)
-        return JsonResponse(serializer.data, status=200)
-    
-    return JsonResponse({'message': 'Method not allowed'}, status=405)
+    credit_card.expiry_date = request.data.get('expiry_date', credit_card.expiry_date)
+    credit_card.cvv = request.data.get('cvv', credit_card.cvv)
+    credit_card.cardholder_name = request.data.get('cardholder_name', credit_card.cardholder_name)
+    credit_card.save()
+
+    serializer = CardSerializer(credit_card)
+    return JsonResponse(serializer.data, status=200)
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
@@ -885,9 +921,12 @@ def add_identity_card(request):
             if not id_number or not expiry_date or not name or not surname or not nationality or not date_of_issue or not date_of_birth:
                 return JsonResponse({'message': 'All fields are required'}, status=400)
 
+            # Chiffrer le numéro d'identité avant de l'enregistrer
+            encrypted_id_number = encrypt_data(id_number)
+
             identity_card = IdentityCard.objects.create(
                 user=request.user,
-                id_number=id_number,
+                encrypted_id_number=encrypted_id_number,
                 expiry_date=expiry_date,
                 name=name,
                 surname=surname,
@@ -907,25 +946,25 @@ def add_identity_card(request):
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
 def update_identity_card(request, card_id):
-    if request.method == 'PATCH':
-        try:
-            identity_card = IdentityCard.objects.get(id=card_id, user=request.user)
-        except IdentityCard.DoesNotExist:
-            return JsonResponse({'message': 'Identity card does not exist'}, status=404)
+    try:
+        identity_card = IdentityCard.objects.get(id=card_id, user=request.user)
+    except IdentityCard.DoesNotExist:
+        return JsonResponse({'message': 'Identity card does not exist'}, status=404)
 
-        identity_card.id_number = request.data.get('id_number', identity_card.id_number)
-        identity_card.expiry_date = request.data.get('expiry_date', identity_card.expiry_date)
-        identity_card.name = request.data.get('name', identity_card.name)
-        identity_card.surname = request.data.get('surname', identity_card.surname)
-        identity_card.nationality = request.data.get('nationality', identity_card.nationality)
-        identity_card.date_of_issue = request.data.get('date_of_issue', identity_card.date_of_issue)
-        identity_card.date_of_birth = request.data.get('date_of_birth', identity_card.date_of_birth)
-        identity_card.save()
+    id_number = request.data.get('id_number', None)
+    if id_number:
+        identity_card.encrypted_id_number = encrypt_data(id_number)
 
-        serializer = IdentitySerializer(identity_card)
-        return JsonResponse(serializer.data, status=200)
-    
-    return JsonResponse({'message': 'Method not allowed'}, status=405)
+    identity_card.expiry_date = request.data.get('expiry_date', identity_card.expiry_date)
+    identity_card.name = request.data.get('name', identity_card.name)
+    identity_card.surname = request.data.get('surname', identity_card.surname)
+    identity_card.nationality = request.data.get('nationality', identity_card.nationality)
+    identity_card.date_of_issue = request.data.get('date_of_issue', identity_card.date_of_issue)
+    identity_card.date_of_birth = request.data.get('date_of_birth', identity_card.date_of_birth)
+    identity_card.save()
+
+    serializer = IdentitySerializer(identity_card)
+    return JsonResponse(serializer.data, status=200)
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
@@ -950,39 +989,31 @@ def identity_card_list(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_encryption_key(request):
-    print('Authorization Token:', request.headers.get('Authorization'))  # Log the authorization token
-
     if request.method == 'POST':
         try:
-            # Parse the request data
             data = json.loads(request.body)
             titles = data.get('titles')
             key = data.get('key')
 
-            # Check if titles and key are provided
             if not key or not titles:
                 return JsonResponse({'message': 'All fields are required'}, status=400)
 
-            # Create the encryption key
+            # Chiffrer la clé avant de l'enregistrer
+            encrypted_key = encrypt_data(key)
+
             encryption_key = EncryptionKey.objects.create(
                 user=request.user,
                 titles=titles,
-                key=key
+                encrypted_key=encrypted_key
             )
+            encryption_key.save()
 
-            # Serialize the encryption key
             serializer = EncryptionKeySerializer(encryption_key)
-
-            # Return the serialized data
             return JsonResponse(serializer.data, status=201)
         except Exception as e:
-            # Log the exception and return a bad request response
-            print('Exception:', str(e))
             return JsonResponse({'message': 'Bad request', 'error': str(e)}, status=400)
     else:
-        # Return a method not allowed response
         return JsonResponse({'message': 'Method not allowed'}, status=405)
-
 
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
@@ -992,8 +1023,10 @@ def update_encryption_key(request, key_id):
     except EncryptionKey.DoesNotExist:
         return JsonResponse({'message': 'Encryption key does not exist'}, status=404)
 
-    encryption_key.titles = request.data.get('title', encryption_key.titles)
-    encryption_key.key = request.data.get('key', encryption_key.key)
+    encryption_key.titles = request.data.get('titles', encryption_key.titles)
+    key = request.data.get('key', None)
+    if key:
+        encryption_key.encrypted_key = encrypt_data(key)
     encryption_key.save()
 
     serializer = EncryptionKeySerializer(encryption_key)

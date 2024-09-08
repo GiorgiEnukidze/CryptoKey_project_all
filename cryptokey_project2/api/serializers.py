@@ -15,25 +15,37 @@ class PasswordEntrySerializer(serializers.ModelSerializer):
         return obj.get_decrypted_password()
 
 class SecureNoteSerializer(serializers.ModelSerializer):
+    content = serializers.SerializerMethodField()  # Ajoutez cela
+
     class Meta:
         model = SecureNote
         fields = ['id', 'user', 'title', 'content', 'created_at', 'updated_at']
 
+    def get_content(self, obj):
+        return decrypt_data(obj.encrypted_content)
+
+
 class CardSerializer(serializers.ModelSerializer):
     class Meta:
         model = CreditCard
-        fields = ['id', 'user', 'card_number', 'expiry_date', 'cvv', 'cardholder_name', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'encrypted_card_number', 'expiry_date', 'cvv', 'cardholder_name', 'created_at', 'updated_at']
+    def get_card_number(self, obj):
+        return decrypt_data(obj.encrypted_card_number)
 
 class IdentitySerializer(serializers.ModelSerializer):
     class Meta:
         model = IdentityCard
-        fields = ['id', 'user', 'name', 'surname', 'nationality', 'id_number', 'date_of_issue', 'expiry_date', 'date_of_birth', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'name', 'surname', 'nationality', 'encrypted_id_number', 'date_of_issue', 'expiry_date', 'date_of_birth', 'created_at', 'updated_at']
+    def get_id_number(self, obj):
+        return decrypt_data(obj.encrypted_id_number)
 
 
 class EncryptionKeySerializer(serializers.ModelSerializer):
     class Meta:
         model = EncryptionKey
-        fields = ['id', 'user', 'titles', 'key', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'titles', 'encrypted_key', 'created_at', 'updated_at']
+    def get_key(self, obj):
+        return decrypt_data(obj.encrypted_key)
 
 
 class UserSerializer(serializers.ModelSerializer):
