@@ -21,6 +21,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1', 
     'lebourbier.be',
     'cryptokey.lebourbier.be',
+    'www.cryptokey.lebourbier.be',
     'web',
 ]
 
@@ -84,6 +85,7 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
 
     "http://cryptokey.lebourbier.be", 
+    "https://cryptokey.lebourbier.be", 
     "http://cryptokey.lebourbier.be:8000",  
     "http://localhost:60888",  
     "http://localhost",         
