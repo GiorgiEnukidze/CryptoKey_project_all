@@ -49,7 +49,7 @@ ARG API_URL
 RUN flutter build web --dart-define=API_URL=${API_URL} --suppress-analytics
 
 # Étape 4 : Configuration du serveur Nginx pour servir l'application Flutter Web
-FROM nginx:alpine
+FROM nginx:1.29.3-alpine3.22
 
 # Copier les fichiers construits depuis l'étape précédente
 COPY --from=build /app/build/web /usr/share/nginx/html
